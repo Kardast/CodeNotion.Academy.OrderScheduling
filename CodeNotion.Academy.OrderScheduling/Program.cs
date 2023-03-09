@@ -1,3 +1,10 @@
+using System.Reflection;
+using CodeNotion.Academy.OrderScheduling.Database;
+using CodeNotion.Academy.OrderScheduling.Models.Repositories;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+// Dependency Injection
+builder.Services.AddTransient<IDbOrderRepository, DbOrderRepository>();
+builder.Services.AddDbContext<DatabaseContext>();
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
