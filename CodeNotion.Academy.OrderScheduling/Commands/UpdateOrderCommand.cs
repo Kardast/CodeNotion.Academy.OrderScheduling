@@ -6,7 +6,7 @@ namespace CodeNotion.Academy.OrderScheduling.Commands;
 
 public record UpdateOrderCommand(int Id, Order Order) : IRequest<Order>;
 
-public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, Order>
+internal class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, Order>
 {
     private readonly DatabaseContext _db;
     private readonly Timer _timer;

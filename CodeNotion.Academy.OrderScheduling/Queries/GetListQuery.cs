@@ -6,7 +6,7 @@ namespace CodeNotion.Academy.OrderScheduling.Queries;
 
 public record GetListQuery : IRequest<List<Order>>;
 
-public class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
+internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
 {
     private readonly DatabaseContext _db;
     private readonly Timer _timer;

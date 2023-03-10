@@ -5,7 +5,7 @@ namespace CodeNotion.Academy.OrderScheduling.Commands;
 
 public record DeleteOrderCommand(int Id) : IRequest<int>;
 
-public class DeleteOrderHandler : IRequestHandler<DeleteOrderCommand, int>
+internal class DeleteOrderHandler : IRequestHandler<DeleteOrderCommand, int>
 {
     private readonly DatabaseContext _db;
     private readonly Timer _timer;
