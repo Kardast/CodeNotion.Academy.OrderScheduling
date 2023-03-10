@@ -1,4 +1,3 @@
-using System;
 using CodeNotion.Academy.OrderScheduling.Commands;
 using CodeNotion.Academy.OrderScheduling.Models;
 using CodeNotion.Academy.OrderScheduling.Models.Repositories;
@@ -48,7 +47,7 @@ public class OrderController : ControllerBase
     
     [Route("{id:int}")]
     [HttpPost]
-    public IActionResult Update(int id, Order order)
+    public async Task<IActionResult> Update(int id, Order order)
     {
         _orderRepository.StartTime();
         if (!ModelState.IsValid)
@@ -56,8 +55,8 @@ public class OrderController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var orderFromDb = _orderRepository.GetById(id);
-        _orderRepository.Update(orderFromDb ?? throw new InvalidOperationException(), order);
+        var command = new UpdateOrderCommand(id, order);
+        await _mediator.Send(command);
         _orderRepository.EndTime();
         return Ok(order);
     }
@@ -70,6 +69,6 @@ public class OrderController : ControllerBase
         var command = new DeleteOrderCommand(id);
         await _mediator.Send(command);
         _orderRepository.EndTime();
-        return NoContent();
+        return Ok("Removed file");
     }
 }

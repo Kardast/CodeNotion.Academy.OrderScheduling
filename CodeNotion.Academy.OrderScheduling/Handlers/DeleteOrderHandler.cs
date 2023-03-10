@@ -17,6 +17,6 @@ public class DeleteOrderHandler : IRequestHandler<DeleteOrderCommand, Order>
     public Task<Order> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {
         var order = _orderRepository.GetById(request.Id);
-        return Task.FromResult<Order>(_orderRepository.Delete(order ?? throw new InvalidOperationException()));
+        return Task.FromResult(_orderRepository.Delete(order ?? throw new InvalidOperationException()));
     }
 }

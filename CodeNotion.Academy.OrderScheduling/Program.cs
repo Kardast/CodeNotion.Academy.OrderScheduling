@@ -1,9 +1,6 @@
 using System.Reflection;
 using CodeNotion.Academy.OrderScheduling.Database;
 using CodeNotion.Academy.OrderScheduling.Models.Repositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 

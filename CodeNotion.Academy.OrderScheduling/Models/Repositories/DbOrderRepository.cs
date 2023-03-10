@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using CodeNotion.Academy.OrderScheduling.Database;
 
 namespace CodeNotion.Academy.OrderScheduling.Models.Repositories;
@@ -41,7 +38,7 @@ public class DbOrderRepository : IDbOrderRepository
     public List<Order> All() =>
         _db.Orders.ToList();
 
-    public void Update(Order order, Order modifiedOrder)
+    public Order Update(Order order, Order modifiedOrder)
     {
         order.Customer = modifiedOrder.Customer;
         order.OrderNumber = modifiedOrder.OrderNumber;
@@ -51,6 +48,7 @@ public class DbOrderRepository : IDbOrderRepository
         order.AssemblyDate = modifiedOrder.AssemblyDate;
 
         _db.SaveChanges();
+        return order;
     }
 
     public Order Delete(Order order)

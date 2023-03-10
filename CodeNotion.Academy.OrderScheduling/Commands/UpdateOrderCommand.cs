@@ -3,12 +3,14 @@ using MediatR;
 
 namespace CodeNotion.Academy.OrderScheduling.Commands;
 
-public class DeleteOrderCommand : IRequest<Order>
+public class UpdateOrderCommand : IRequest<Order>
 {
     public int Id { get; }
+    public Order Order { get; }
     
-    public DeleteOrderCommand(int id)
+    public UpdateOrderCommand(int id, Order order)
     {
         Id = id;
+        Order = order;
     }
 }

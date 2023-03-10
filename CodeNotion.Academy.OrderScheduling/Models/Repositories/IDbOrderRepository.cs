@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace CodeNotion.Academy.OrderScheduling.Models.Repositories;
 
 public interface IDbOrderRepository
@@ -9,6 +7,6 @@ public interface IDbOrderRepository
     Order? GetById(int id);
     Order Create(Order? order);
     List<Order> All();
-    void Update(Order order, Order modifiedOrder);
+    Order Update(Order order, Order modifiedOrder);
     Order Delete(Order order);
 }
