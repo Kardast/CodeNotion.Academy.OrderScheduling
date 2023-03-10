@@ -7,8 +7,8 @@ public interface IDbOrderRepository
     void StartTime();
     void EndTime();
     Order? GetById(int id);
-    void Create(Order? order);
+    Order Create(Order? order);
     List<Order> All();
     void Update(Order order, Order modifiedOrder);
-    void Delete(Order order);
+    Order Delete(Order order);
 }

@@ -31,10 +31,11 @@ public class DbOrderRepository : IDbOrderRepository
     public Order? GetById(int id) =>
         _db.Orders.FirstOrDefault(o => o.Id == id);
 
-    public void Create(Order? order)
+    public Order Create(Order? order)
     {
         _db.Orders.Add(order ?? throw new ArgumentNullException(nameof(order)));
         _db.SaveChanges();
+        return order;
     }
 
     public List<Order> All() =>
@@ -52,9 +53,10 @@ public class DbOrderRepository : IDbOrderRepository
         _db.SaveChanges();
     }
 
-    public void Delete(Order order)
+    public Order Delete(Order order)
     {
         _db.Orders.Remove(order);
         _db.SaveChanges();
+        return order;
     }
 }

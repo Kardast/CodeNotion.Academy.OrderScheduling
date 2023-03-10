@@ -5,7 +5,6 @@ using CodeNotion.Academy.OrderScheduling.Models.Repositories;
 using CodeNotion.Academy.OrderScheduling.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-// using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 namespace CodeNotion.Academy.OrderScheduling.Controllers;
 
@@ -31,9 +30,9 @@ public class OrderController : ControllerBase
             return BadRequest(ModelState);
         }
         
-        var id = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
         _orderRepository.EndTime();
-        return Ok(id);
+        return Ok(result);
     }
     
     [Route("")]
@@ -65,12 +64,12 @@ public class OrderController : ControllerBase
     
     [Route("{id:int}")]
     [HttpPost]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         _orderRepository.StartTime();
-        var order = _orderRepository.GetById(id);
-        _orderRepository.Delete(order ?? throw new InvalidOperationException());
+        var command = new DeleteOrderCommand(id);
+        await _mediator.Send(command);
         _orderRepository.EndTime();
-        return Ok(order);
+        return NoContent();
     }
 }

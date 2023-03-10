@@ -5,10 +5,9 @@ namespace CodeNotion.Academy.OrderScheduling.Commands;
 
 public class CreateOrderCommand : IRequest<Order>
 {
+    public Order? Order { get; }
     public CreateOrderCommand(Order? order)
     {
-        this.order = order;
+        this.Order = order;
     }
-
-    public Order? order { get; set; }
 }
