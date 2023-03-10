@@ -1,14 +1,28 @@
-using CodeNotion.Academy.OrderScheduling.Models;
+using CodeNotion.Academy.OrderScheduling.Database;
 using MediatR;
 
 namespace CodeNotion.Academy.OrderScheduling.Commands;
 
-public class DeleteOrderCommand : IRequest<Order>
+public record DeleteOrderCommand(int Id) : IRequest<int>;
+
+public class DeleteOrderHandler : IRequestHandler<DeleteOrderCommand, int>
 {
-    public int Id { get; }
+    private readonly DatabaseContext _db;
+    private readonly Timer _timer;
     
-    public DeleteOrderCommand(int id)
+    public DeleteOrderHandler(DatabaseContext db, Timer timer)
     {
-        Id = id;
+        _db = db;
+        _timer = timer;
+    }
+
+    public Task<int> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
+    {
+        _timer.StartTime();
+        var orderToRemove = _db.Orders.FirstOrDefault(o => o.Id == request.Id);
+        if (orderToRemove != null) _db.Orders.Remove(orderToRemove);
+        _db.SaveChanges();
+        _timer.EndTime();
+        return Task.FromResult(request.Id);
     }
 }

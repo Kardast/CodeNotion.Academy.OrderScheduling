@@ -1,6 +1,7 @@
 using System.Reflection;
 using CodeNotion.Academy.OrderScheduling.Database;
 using CodeNotion.Academy.OrderScheduling.Models.Repositories;
+using Timer = CodeNotion.Academy.OrderScheduling.Timer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 // Dependency Injection
 builder.Services.AddTransient<IDbOrderRepository, DbOrderRepository>();
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped<Timer>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
