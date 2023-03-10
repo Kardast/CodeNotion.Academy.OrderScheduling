@@ -1,5 +1,3 @@
-using System;
-
 namespace CodeNotion.Academy.OrderScheduling.Models;
 
 public class Order
