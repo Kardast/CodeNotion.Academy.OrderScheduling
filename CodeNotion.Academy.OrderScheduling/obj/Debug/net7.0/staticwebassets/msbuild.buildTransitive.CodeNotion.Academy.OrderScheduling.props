@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\CodeNotion.Academy.OrderScheduling.props" />
-</Project>
