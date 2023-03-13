@@ -1,5 +1,6 @@
 using CodeNotion.Academy.OrderScheduling.Database;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Commands;
 
@@ -14,11 +15,11 @@ internal class DeleteOrderHandler : IRequestHandler<DeleteOrderCommand, int>
         _db = db;
     }
 
-    public Task<int> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {
-        var orderToRemove = _db.Orders.FirstOrDefault(o => o.Id == request.Id);
+        var orderToRemove = await _db.Orders.FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken: cancellationToken);
         if (orderToRemove != null) _db.Orders.Remove(orderToRemove);
-        _db.SaveChanges();
-        return Task.FromResult(request.Id);
+        await _db.SaveChangesAsync(cancellationToken);
+        return request.Id;
     }
 }

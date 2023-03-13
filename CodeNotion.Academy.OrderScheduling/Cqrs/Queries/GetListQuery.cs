@@ -1,6 +1,7 @@
 using CodeNotion.Academy.OrderScheduling.Database;
 using CodeNotion.Academy.OrderScheduling.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Queries;
 
@@ -15,9 +16,9 @@ internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
         _db = db;
     }
 
-    public Task<List<Order>> Handle(GetListQuery request, CancellationToken cancellationToken)
+    public async Task<List<Order>> Handle(GetListQuery request, CancellationToken cancellationToken)
     {
-        var orders = _db.Orders.ToList();
-        return Task.FromResult(orders);
+        var orders = await _db.Orders.ToListAsync(cancellationToken: cancellationToken);
+        return orders;
     }
 }

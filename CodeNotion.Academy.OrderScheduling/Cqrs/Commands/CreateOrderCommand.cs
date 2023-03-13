@@ -15,14 +15,14 @@ internal class CreateOrderHandler : IRequestHandler<CreateOrderCommand, Order>
         _db = db;
     }
 
-    public Task<Order> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Order> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
         if (request.Order != null)
         {
             _db.Orders.Add(request.Order);
         }
 
-        _db.SaveChanges();
-        return Task.FromResult(request.Order ?? throw new InvalidOperationException());
+        await _db.SaveChangesAsync(cancellationToken);
+        return request.Order ?? throw new InvalidOperationException();
     }
 }
