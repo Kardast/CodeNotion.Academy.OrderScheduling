@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Code\\Academy032023\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj": {}
+    "C:\\Users\\Kardast\\Desktop\\Lavoro\\JetRidersSolutions\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj": {}
   },
   "projects": {
-    "C:\\Code\\Academy032023\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj": {
+    "C:\\Users\\Kardast\\Desktop\\Lavoro\\JetRidersSolutions\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Code\\Academy032023\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj",
+        "projectUniqueName": "C:\\Users\\Kardast\\Desktop\\Lavoro\\JetRidersSolutions\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj",
         "projectName": "CodeNotion.Academy.OrderScheduling",
-        "projectPath": "C:\\Code\\Academy032023\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj",
-        "packagesPath": "C:\\Users\\ferra\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\Academy032023\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\obj\\",
+        "projectPath": "C:\\Users\\Kardast\\Desktop\\Lavoro\\JetRidersSolutions\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling.csproj",
+        "packagesPath": "C:\\Users\\Kardast\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Kardast\\Desktop\\Lavoro\\JetRidersSolutions\\CodeNotion.Academy.OrderScheduling\\CodeNotion.Academy.OrderScheduling\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\ferra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Kardast\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,9 +22,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "http://10.102.2.27:91/nuget": {},
-          "http://10.102.2.27:92/nuget": {},
-          "http://10.102.2.27:93/nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -96,7 +90,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

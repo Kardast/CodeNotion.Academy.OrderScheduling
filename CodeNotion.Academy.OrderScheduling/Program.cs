@@ -1,7 +1,8 @@
 using System.Reflection;
+using CodeNotion.Academy.OrderScheduling.Cqrs.Decorators;
 using CodeNotion.Academy.OrderScheduling.Database;
-using CodeNotion.Academy.OrderScheduling.Models.Repositories;
-using Timer = CodeNotion.Academy.OrderScheduling.Timer;
+using MediatR;
+using Timer = CodeNotion.Academy.OrderScheduling.Cqrs.Decorators.Timer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Dependency Injection
-builder.Services.AddTransient<IDbOrderRepository, DbOrderRepository>();
 builder.Services.AddDbContext<DatabaseContext>();
-builder.Services.AddScoped<Timer>();
+builder.Services.AddTransient<Timer>();
 
+// Mediator add
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+// Decorators
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExecutionTimerDecorator<,>));
 
 builder.Services.AddSwaggerGen();
 

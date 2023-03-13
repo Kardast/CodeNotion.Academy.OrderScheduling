@@ -1,6 +1,6 @@
-using CodeNotion.Academy.OrderScheduling.Commands;
+using CodeNotion.Academy.OrderScheduling.Cqrs.Commands;
+using CodeNotion.Academy.OrderScheduling.Cqrs.Queries;
 using CodeNotion.Academy.OrderScheduling.Models;
-using CodeNotion.Academy.OrderScheduling.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ public class OrderController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public OrderController (IMediator mediator)
+    public OrderController(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -24,10 +24,11 @@ public class OrderController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+
         var result = await _mediator.Send(command);
         return Ok(result);
     }
-    
+
     [Route("")]
     [HttpGet]
     public async Task<IActionResult> List()
@@ -36,7 +37,7 @@ public class OrderController : ControllerBase
         var result = await _mediator.Send(query);
         return Ok(result);
     }
-    
+
     [Route("{id:int}")]
     [HttpPost]
     public async Task<IActionResult> Update(int id, Order order)
@@ -45,17 +46,18 @@ public class OrderController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+
         var command = new UpdateOrderCommand(id, order);
         var result = await _mediator.Send(command);
         return Ok(result);
     }
-    
+
     [Route("{id:int}")]
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
         var command = new DeleteOrderCommand(id);
         await _mediator.Send(command);
-        return Ok("Removed file");
+        return Ok("File removed");
     }
 }
