@@ -1,4 +1,5 @@
 using System.Reflection;
+using CodeNotion.Academy.OrderScheduling.Configurations;
 using CodeNotion.Academy.OrderScheduling.Cqrs.Decorators;
 using CodeNotion.Academy.OrderScheduling.Database;
 using MediatR;
@@ -15,6 +16,8 @@ builder.Services.AddEndpointsApiExplorer();
 // Dependency Injection
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddTransient<Timer>();
+builder.Services.AddSwagger();
+builder.Services.AddNSwag();
 
 // Mediator
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
@@ -27,11 +30,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseApplicationSwagger();
 
 app.UseHttpsRedirection();
 
