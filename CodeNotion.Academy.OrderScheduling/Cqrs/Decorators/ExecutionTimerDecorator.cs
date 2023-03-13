@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azure.Core;
 using MediatR;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Decorators;

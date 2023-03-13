@@ -16,7 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddTransient<Timer>();
 
-// Mediator add
+// Mediator
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 // Decorators
