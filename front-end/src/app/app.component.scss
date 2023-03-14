@@ -1,10 +1,10 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-main{
+main {
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   background-color: #0D1117;
@@ -15,15 +15,15 @@ main{
   //debug
   height: 1500px;
 
-  .title{
+  .title {
     padding: 25px 0 45px 0;
   }
 
-  .ordersWrapper{
+  .ordersWrapper {
     display: flex;
     flex-direction: column;
 
-    .singleOrder{
+    .singleOrder {
       background-color: #253142;
       text-align: left;
       margin-bottom: 15px;
@@ -32,15 +32,13 @@ main{
       max-width: 350px;
       list-style-type: none;
 
-      li{
+      li {
         margin-bottom: 5px;
 
-        span{
+        span {
           color: #8484a0;
         }
       }
     }
   }
 }
-
-

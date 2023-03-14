@@ -9,7 +9,9 @@ import { Order, OrderClient } from './api.service';
 export class AppComponent {
   title = 'order-scheduling-angular';
   list: Order[] = [];
-  constructor(private orderClient:OrderClient){
-    orderClient.list().subscribe(list=>this.list = list);
+  constructor(private orderClient: OrderClient) {
+    orderClient.list().subscribe(list => this.list = list);
   }
+
+  columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
 }

@@ -2,15 +2,12 @@
   <h1 class="title">
     {{title}}
   </h1>
-  <div class="ordersWrapper">
-    <ul class="singleOrder" *ngFor="let orderItem of list">
-      <li>Id: <span>{{orderItem.id}}</span></li>
-      <li>Customer: <span>{{orderItem.customer}}</span></li>
-      <li>Order Number: <span>{{orderItem.orderNumber}}</span></li>
-      <li>Cutting Date: <span>{{orderItem.cuttingDate}}</span></li>
-      <li>Preparation Date: <span>{{orderItem.preparationDate}}</span></li>
-      <li>Bending Date: <span>{{orderItem.bendingDate}}</span></li>
-      <li>Assembly Date: <span>{{orderItem.assemblyDate}}</span></li>
-    </ul>
-  </div>
+  <table mat-table [dataSource]="list">
+    <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
+      <th mat-header-cell *matHeaderCellDef>{{column}}</th>
+      <td mat-cell *matCellDef="let listOrder">{{listOrder[column]}}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+  </table>
 </main>
