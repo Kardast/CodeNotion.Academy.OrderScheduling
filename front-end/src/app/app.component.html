@@ -1,5 +1,16 @@
-{{title}}
-<button (click)="changeTitle()">Cambia Titolo</button>
-<div *ngFor="let valore of array">
-{{valore}}
-</div>
+<main>
+  <h1 class="title">
+    {{title}}
+  </h1>
+  <div class="ordersWrapper">
+    <ul class="singleOrder" *ngFor="let orderItem of list">
+      <li>Id: <span>{{orderItem.id}}</span></li>
+      <li>Customer: <span>{{orderItem.customer}}</span></li>
+      <li>Order Number: <span>{{orderItem.orderNumber}}</span></li>
+      <li>Cutting Date: <span>{{orderItem.cuttingDate}}</span></li>
+      <li>Preparation Date: <span>{{orderItem.preparationDate}}</span></li>
+      <li>Bending Date: <span>{{orderItem.bendingDate}}</span></li>
+      <li>Assembly Date: <span>{{orderItem.assemblyDate}}</span></li>
+    </ul>
+  </div>
+</main>
