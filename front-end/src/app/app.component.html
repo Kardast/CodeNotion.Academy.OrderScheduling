@@ -2,7 +2,14 @@
   <h1 class="title">
     {{title}}
   </h1>
-  <table mat-table [dataSource]="list">
+
+  <button (click)="log()">log</button>
+
+  <mat-form-field class="example-full-width">
+    <input type="text" matInput [(ngModel)]="searchTerm" placeholder="Search...">
+  </mat-form-field>
+
+  <table mat-table [dataSource]="filteredData">
     <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
       <th mat-header-cell *matHeaderCellDef>{{column}}</th>
       <td mat-cell *matCellDef="let listOrder">{{listOrder[column]}}</td>
@@ -10,4 +17,13 @@
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
     <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
   </table>
+
+  <!-- <table mat-table [dataSource]="filterTableData(list, searchTerm)">
+    <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
+      <th mat-header-cell *matHeaderCellDef>{{column}}</th>
+      <td mat-cell *matCellDef="let listOrder">{{listOrder[column]}}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+  </table> -->
 </main>

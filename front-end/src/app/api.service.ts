@@ -22,9 +22,10 @@ export interface IOrderClient {
      */
     createOrder(body?: CreateOrderCommand | undefined): Observable<void>;
     /**
+     * @param queryParams (optional) 
      * @return Success
      */
-    list(): Observable<Order[]>;
+    list(queryParams?: string | undefined): Observable<Order[]>;
     /**
      * @param body (optional) 
      * @return Success
@@ -102,10 +103,15 @@ export class OrderClient implements IOrderClient {
     }
 
     /**
+     * @param queryParams (optional) 
      * @return Success
      */
-    list(): Observable<Order[]> {
-        let url_ = this.baseUrl + "/api/Order/List";
+    list(queryParams?: string | undefined): Observable<Order[]> {
+        let url_ = this.baseUrl + "/api/Order/List?";
+        if (queryParams === null)
+            throw new Error("The parameter 'queryParams' cannot be null.");
+        else if (queryParams !== undefined)
+            url_ += "queryParams=" + encodeURIComponent("" + queryParams) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
