@@ -32,9 +32,9 @@ public class OrderController : ControllerBase
     [Route("")]
     [HttpGet]
     [ProducesResponseType(typeof(List<Order>), 200)]
-    public async Task<IActionResult> List()
+    public async Task<IActionResult> List([FromQuery]string? customer, string? orderNumber)
     {
-        var query = new GetListQuery();
+        var query = new GetListQuery(customer, orderNumber);
         var result = await _mediator.Send(query);
         return Ok(result);
     }

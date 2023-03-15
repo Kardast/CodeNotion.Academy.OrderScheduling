@@ -22,10 +22,11 @@ export interface IOrderClient {
      */
     createOrder(body?: CreateOrderCommand | undefined): Observable<void>;
     /**
-     * @param queryParams (optional) 
+     * @param customer (optional) 
+     * @param orderNumber (optional) 
      * @return Success
      */
-    list(queryParams?: string | undefined): Observable<Order[]>;
+    list(customer?: string | undefined, orderNumber?: string | undefined): Observable<Order[]>;
     /**
      * @param body (optional) 
      * @return Success
@@ -103,15 +104,20 @@ export class OrderClient implements IOrderClient {
     }
 
     /**
-     * @param queryParams (optional) 
+     * @param customer (optional) 
+     * @param orderNumber (optional) 
      * @return Success
      */
-    list(queryParams?: string | undefined): Observable<Order[]> {
+    list(customer?: string | undefined, orderNumber?: string | undefined): Observable<Order[]> {
         let url_ = this.baseUrl + "/api/Order/List?";
-        if (queryParams === null)
-            throw new Error("The parameter 'queryParams' cannot be null.");
-        else if (queryParams !== undefined)
-            url_ += "queryParams=" + encodeURIComponent("" + queryParams) + "&";
+        if (customer === null)
+            throw new Error("The parameter 'customer' cannot be null.");
+        else if (customer !== undefined)
+            url_ += "customer=" + encodeURIComponent("" + customer) + "&";
+        if (orderNumber === null)
+            throw new Error("The parameter 'orderNumber' cannot be null.");
+        else if (orderNumber !== undefined)
+            url_ += "orderNumber=" + encodeURIComponent("" + orderNumber) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

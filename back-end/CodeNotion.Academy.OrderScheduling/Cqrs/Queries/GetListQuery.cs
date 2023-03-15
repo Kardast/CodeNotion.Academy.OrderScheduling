@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Queries;
 
-public record GetListQuery : IRequest<List<Order>>;
+public record GetListQuery(string? Customer, string? OrderNumber) : IRequest<List<Order>>;
 
 internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
 {
@@ -18,7 +18,18 @@ internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
 
     public async Task<List<Order>> Handle(GetListQuery request, CancellationToken cancellationToken)
     {
-        var orders = await _db.Orders.ToListAsync(cancellationToken: cancellationToken);
-        return orders;
+        var orders = _db.Orders;
+        if (request.Customer != null)
+        {
+            return await orders.Where(order => order.Customer.ToLower().Contains(request.Customer.ToLower()))
+                .ToListAsync(cancellationToken: cancellationToken);
+        }
+        else if (request.OrderNumber != null)
+        {
+            return await orders.Where(order => order.OrderNumber.ToLower().Contains(request.OrderNumber.ToLower()))
+                .ToListAsync(cancellationToken: cancellationToken);
+        }
+
+        return await orders.ToListAsync(cancellationToken: cancellationToken);
     }
 }
