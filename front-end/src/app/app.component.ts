@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Order, OrderClient } from './api.service';
 import { ActivatedRoute } from '@angular/router';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -26,18 +25,10 @@ export class AppComponent implements OnInit {
   fetchData() {
     // Fetch the data from the API using the service
     this.orderClient.list(this.searchCustomer, this.searchOrderNumber).subscribe((data: any) => {
+      console.log("1", data);
       this.list = data;
-      this.filterData();
-    });
-  }
-
-  filterData() {
-    // Apply the filter function to the raw data and update the filteredData array
-    this.filteredData = this.list.filter(item => {
-      if (item.customer?.includes(this.searchCustomer)) {
-        return item.customer?.includes(this.searchCustomer);
-      }
-      return item.orderNumber?.includes(this.searchOrderNumber);
+      // Apply the filter to the raw data and update the filteredData array
+      this.filteredData = this.list;
     });
   }
 }

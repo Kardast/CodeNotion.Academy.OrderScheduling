@@ -10,9 +10,6 @@
         <input type="text" matInput [(ngModel)]="searchCustomer" placeholder="Write...">
       </mat-form-field>
 
-      <div class="example-button-row">
-        <button (click)="fetchData()" mat-raised-button color="primary">Filter</button>
-      </div>
     </div>
 
     <div class="filter">
@@ -23,6 +20,9 @@
     </div>
   </div>
 
+  <div class="example-button-row">
+    <button (click)="fetchData()" mat-raised-button color="primary">Filter</button>
+  </div>
   <table class="ordersTable" mat-table [dataSource]="filteredData">
     <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
       <th mat-header-cell *matHeaderCellDef>{{column}}</th>
