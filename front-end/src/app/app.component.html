@@ -14,6 +14,17 @@
     </div>
   </div>
 
+  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1)">
+      <mat-label>{{column}}</mat-label>
+      <input matInput formControlName="{{column}}" type="text">
+    </mat-form-field>
+
+    <div class="example-button-row">
+      <button color="primary" mat-raised-button type="submit">Submit</button>
+    </div>
+  </form>
+
   <table class="ordersTable" mat-table [dataSource]="orders$">
     <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
       <th mat-header-cell *matHeaderCellDef>{{column}}</th>

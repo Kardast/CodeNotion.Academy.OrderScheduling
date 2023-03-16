@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,7 +17,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
   imports: [
     BrowserModule, HttpClientModule, BrowserAnimationsModule, MatTableModule,
-    MatPaginatorModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule
+    MatPaginatorModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule,
+    MatFormFieldModule
   ],
   providers: [{ provide: API_BASE_URL, useValue: "http://localhost:5075" }],
   bootstrap: [AppComponent],

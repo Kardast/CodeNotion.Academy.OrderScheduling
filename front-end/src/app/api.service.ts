@@ -20,7 +20,7 @@ export interface IOrderClient {
      * @param body (optional) 
      * @return Success
      */
-    createOrder(body?: CreateOrderCommand | undefined): Observable<void>;
+    createOrder(body?: Order | undefined): Observable<void>;
     /**
      * @param customer (optional) 
      * @param orderNumber (optional) 
@@ -55,7 +55,7 @@ export class OrderClient implements IOrderClient {
      * @param body (optional) 
      * @return Success
      */
-    createOrder(body?: CreateOrderCommand | undefined): Observable<void> {
+    createOrder(body?: Order | undefined): Observable<void> {
         let url_ = this.baseUrl + "/api/Order/CreateOrder";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -267,10 +267,6 @@ export class OrderClient implements IOrderClient {
         }
         return _observableOf(null as any);
     }
-}
-
-export interface CreateOrderCommand {
-    order?: Order;
 }
 
 export interface Order {

@@ -18,13 +18,14 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder(CreateOrderCommand command)
+    public async Task<IActionResult> CreateOrder(Order order)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-
+    
+        var command = new CreateOrderCommand(order);
         var result = await _mediator.Send(command);
         return Ok(result);
     }
