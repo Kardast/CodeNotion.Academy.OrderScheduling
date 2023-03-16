@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
 
 @Component({
@@ -6,24 +7,29 @@ import { Order, OrderClient } from './api.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  title = 'order-scheduling-angular';
+export class AppComponent {
   list: Order[] = [];
-  filteredData: any[] = [];
   searchCustomer: string = '';
   searchOrderNumber: string = '';
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
 
-  constructor(private orderClient: OrderClient) { }
+  customerFilter$: Subject<string | null> = new BehaviorSubject<string | null>(null);
+  searchOrderFilter$: Subject<string | null> = new BehaviorSubject<string | null>(null);
+  orderApi$: Observable<Order[]> = new Subject<Order[]>();
+  orders$ = combineLatest([this.customerFilter$, this.searchOrderFilter$]).pipe(
+    switchMap(([customer, order]) => this.orderClient.list(customer ?? undefined, order ?? undefined)),
+  );
 
-  ngOnInit(): void {
-    this.fetchData();
+  constructor(private orderClient: OrderClient) {
+    this.orderApi$ = this.orderClient.list(this.searchCustomer, this.searchOrderNumber);
+    this.orderApi$.subscribe();
   }
 
-  fetchData() {
-    this.orderClient.list(this.searchCustomer, this.searchOrderNumber).subscribe((data: any) => {
-      this.list = data;
-      this.filteredData = this.list;
-    });
+  searchOrderKeyUp() {
+    this.searchOrderFilter$.next(this.searchOrderNumber);
+  }
+
+  searchCustomerKeyUp() {
+    this.customerFilter$.next(this.searchCustomer);
   }
 }
