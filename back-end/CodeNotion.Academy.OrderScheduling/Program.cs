@@ -3,6 +3,7 @@ using CodeNotion.Academy.OrderScheduling.Configurations;
 using CodeNotion.Academy.OrderScheduling.Cqrs.Decorators;
 using CodeNotion.Academy.OrderScheduling.Database;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Timer = CodeNotion.Academy.OrderScheduling.Cqrs.Decorators.Timer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,8 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExecutionTime
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>().Database.Migrate();
 
 app.UseCors(b => b
     .WithOrigins("http://localhost:4200")
