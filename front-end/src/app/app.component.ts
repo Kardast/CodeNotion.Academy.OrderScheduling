@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
+import { Component } from '@angular/core';
+import { BehaviorSubject, combineLatest, filter, Observable, Subject, switchMap, tap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
 
 @Component({
@@ -15,14 +15,11 @@ export class AppComponent {
 
   customerFilter$: Subject<string | null> = new BehaviorSubject<string | null>(null);
   searchOrderFilter$: Subject<string | null> = new BehaviorSubject<string | null>(null);
-  orderApi$: Observable<Order[]> = new Subject<Order[]>();
   orders$ = combineLatest([this.customerFilter$, this.searchOrderFilter$]).pipe(
-    switchMap(([customer, order]) => this.orderClient.list(customer ?? undefined, order ?? undefined)),
+    switchMap(([customer, order]) => this.orderClient.list(customer ?? undefined, order ?? undefined))
   );
 
   constructor(private orderClient: OrderClient) {
-    this.orderApi$ = this.orderClient.list(this.searchCustomer, this.searchOrderNumber);
-    this.orderApi$.subscribe();
   }
 
   searchOrderKeyUp() {
