@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Queries;
 
-public record GetListQuery(string? Customer, string? OrderNumber) : IRequest<List<Order>>;
+public record GetListQuery(string? Customer, string? OrderNumber) : IRequest<Order[]>;
 
-internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
+internal class GetListHandler : IRequestHandler<GetListQuery, Order[]>
 {
     private readonly DatabaseContext _db;
 
@@ -16,29 +16,25 @@ internal class GetListHandler : IRequestHandler<GetListQuery, List<Order>>
         _db = db;
     }
 
-    public async Task<List<Order>> Handle(GetListQuery request, CancellationToken cancellationToken)
+    public async Task<Order[]> Handle(GetListQuery request, CancellationToken ct)
     {
-        var orders = _db.Orders;
+        var orders = _db.Orders.AsQueryable();
 
         if (request is { Customer: { }, OrderNumber: { } })
         {
-            return await orders.Where(order =>
-                    request.Customer != null &&
-                    order.Customer.ToLower().Contains(request.Customer.ToLower()) &&
-                    order.OrderNumber.ToLower().Contains(request.OrderNumber.ToLower()))
-                .ToListAsync(cancellationToken: cancellationToken);
+            orders = orders.Where(order =>
+                order.Customer.ToLower().Contains(request.Customer.ToLower()) &&
+                order.OrderNumber.ToLower().Contains(request.OrderNumber.ToLower()));
         }
-        else if (request.Customer != null)
+        if (request.Customer is not null)
         {
-            return await orders.Where(order => order.Customer.ToLower().Contains(request.Customer.ToLower()))
-                .ToListAsync(cancellationToken: cancellationToken);
+            orders = orders.Where(order => order.Customer.ToLower().Contains(request.Customer.ToLower()));
         }
-        else if (request.OrderNumber != null)
+        if (request.OrderNumber is not null)
         {
-            return await orders.Where(order => order.OrderNumber.ToLower().Contains(request.OrderNumber.ToLower()))
-                .ToListAsync(cancellationToken: cancellationToken);
+            orders = orders.Where(order => order.OrderNumber.ToLower().Contains(request.OrderNumber.ToLower()));
         }
 
-        return await orders.ToListAsync(cancellationToken: cancellationToken);
+        return await orders.ToArrayAsync(ct);
     }
 }

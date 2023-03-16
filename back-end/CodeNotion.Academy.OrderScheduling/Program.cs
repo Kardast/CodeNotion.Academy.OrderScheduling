@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>().Database.Migrate();
+// app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>().Database.Migrate();
 
 app.UseCors(b => b
     .WithOrigins("http://localhost:4200")
