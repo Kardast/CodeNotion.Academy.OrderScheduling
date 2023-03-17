@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { combineLatest, Observable, Observer, switchMap } from 'rxjs';
+import { combineLatest, BehaviorSubject, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
 
 @Component({
@@ -14,63 +14,48 @@ export class AppComponent {
   inputType = ["text", "text", "date", "date", "date", "date"];
   orderForm!: FormGroup;
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
-  customerFilterObserver!: Observer<string>;
-  orderNumberFilterObserver!: Observer<string>;
-  orderCreateObserver!: Observer<Order>;
-  customerFilter$: Observable<string> = new Observable(observer => {
-    this.customerFilterObserver = observer;
-    observer.next();
-  });
-  orderNumberFilter$: Observable<string> = new Observable(observer => {
-    this.orderNumberFilterObserver = observer;
-    observer.next();
-  });
-  orderCreate$: Observable<Order> = new Observable(observer => {
-    this.orderCreateObserver = observer;
-    observer.next();
-  })
-  orders$ = combineLatest([this.customerFilter$, this.orderNumberFilter$, this.orderCreate$]).pipe(
-    switchMap(([customer, orderNumber]) => {
-      return this.orderClient.list(customer ?? undefined, orderNumber ?? undefined)
-    })
-  );
+  
+  searchFilter$ = new BehaviorSubject<{ customer?: string; orderNumber?: string }>({});
+  
+  orderCreate$ = new BehaviorSubject<Order | null>(null);
+
+  orders$ = combineLatest([this.searchFilter$, this.orderCreate$])
+    .pipe(switchMap(([filter]) => this.orderClient.list(filter.customer, filter.orderNumber)));
+
   constructor(private fb: FormBuilder, private orderClient: OrderClient) {
     this.clearOrderForm();
   }
 
   clearOrderForm() {
     this.orderForm = this.fb.group({
-      customer: ['', Validators.required],
-      orderNumber: ['', Validators.required],
-      cuttingDate: ['', Validators.required],
-      preparationDate: ['', Validators.required],
-      bendingDate: ['', Validators.required],
-      assemblyDate: ['', Validators.required],
+      customer: [null, Validators.required],
+      orderNumber: [null, Validators.required],
+      cuttingDate: [null],
+      preparationDate: [null],
+      bendingDate: [null],
+      assemblyDate: [null]
     });
   }
 
   searchCustomerKeyUp() {
-    this.customerFilterObserver.next(this.searchCustomer);
+    this.searchFilter$.next({ ...this.searchFilter$.value, customer: this.searchCustomer });
   }
 
   searchOrderNumberKeyUp() {
-    this.orderNumberFilterObserver.next(this.searchOrderNumber);
+    this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
   }
 
   onSubmit() {
-    if (this.orderForm.valid) {
-      let formData = {
-        customer: this.orderForm.value.customer,
-        orderNumber: this.orderForm.value.orderNumber,
-        cuttingDate: this.orderForm.value.cuttingDate,
-        preparationDate: this.orderForm.value.preparationDate,
-        bendingDate: this.orderForm.value.bendingDate,
-        assemblyDate: this.orderForm.value.assemblyDate
-      };
-      this.orderClient.createOrder(formData).subscribe(() => {
-        this.orderCreateObserver.next(formData);
-      });
+    if (!this.orderForm.valid) {
+      this.clearOrderForm();
+      return;
     }
+
+    const payload = Object.assign({}, this.orderForm.getRawValue()) as Order;
+    this.orderClient
+      .createOrder(payload)
+      .subscribe(() => this.orderCreate$.next(payload));
+
     this.clearOrderForm();
   }
 }
