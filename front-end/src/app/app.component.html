@@ -20,9 +20,9 @@
 
   <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
     <p>Create a new Order</p>
-    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1)">
+    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1); let i = index">
       <mat-label>{{column}}</mat-label>
-      <input matInput formControlName="{{column}}" type="text">
+      <input matInput formControlName="{{column}}" [type]="inputType[i]">
     </mat-form-field>
 
     <div class="example-button-row">

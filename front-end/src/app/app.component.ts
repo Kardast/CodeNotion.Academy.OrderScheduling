@@ -11,6 +11,7 @@ import { Order, OrderClient } from './api.service';
 export class AppComponent {
   searchCustomer: string = '';
   searchOrderNumber: string = '';
+  inputType = ["text", "text", "date", "date", "date", "date"];
   orderForm!: FormGroup;
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
   customerFilterObserver!: Observer<string>;
