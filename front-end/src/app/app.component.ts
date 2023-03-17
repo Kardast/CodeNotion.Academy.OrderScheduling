@@ -1,41 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { combineLatest, Observable, Observer, switchMap } from 'rxjs';
-import { OrderClient } from './api.service';
+import { Order, OrderClient } from './api.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
+export class AppComponent {
   searchCustomer: string = '';
   searchOrderNumber: string = '';
   orderForm!: FormGroup;
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
   customerFilterObserver!: Observer<string>;
   orderNumberFilterObserver!: Observer<string>;
+  orderCreateObserver!: Observer<Order>;
   customerFilter$: Observable<string> = new Observable(observer => {
     this.customerFilterObserver = observer;
-    observer.next()
+    observer.next();
   });
   orderNumberFilter$: Observable<string> = new Observable(observer => {
     this.orderNumberFilterObserver = observer;
-    observer.next()
+    observer.next();
   });
-  orders$ = combineLatest([this.customerFilter$, this.orderNumberFilter$]).pipe(
-    switchMap(([customer, order]) => this.orderClient.list(customer ?? undefined, order ?? undefined))
+  orderCreate$: Observable<Order> = new Observable(observer => {
+    this.orderCreateObserver = observer;
+    observer.next();
+  })
+  orders$ = combineLatest([this.customerFilter$, this.orderNumberFilter$, this.orderCreate$]).pipe(
+    switchMap(([customer, orderNumber]) => {
+      return this.orderClient.list(customer ?? undefined, orderNumber ?? undefined)
+    })
   );
-
-  constructor(private fb: FormBuilder, private orderClient: OrderClient) {}
-
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder, private orderClient: OrderClient) {
     this.clearOrderForm();
   }
 
-  clearOrderForm(){
+  clearOrderForm() {
     this.orderForm = this.fb.group({
-      // Define your form fields here
       customer: ['', Validators.required],
       orderNumber: ['', Validators.required],
       cuttingDate: ['', Validators.required],
@@ -53,9 +56,8 @@ export class AppComponent implements OnInit{
     this.orderNumberFilterObserver.next(this.searchOrderNumber);
   }
 
-  onSubmit(){
-    console.log(this.orderForm);
-    if(this.orderForm.valid){
+  onSubmit() {
+    if (this.orderForm.valid) {
       let formData = {
         customer: this.orderForm.value.customer,
         orderNumber: this.orderForm.value.orderNumber,
@@ -64,12 +66,9 @@ export class AppComponent implements OnInit{
         bendingDate: this.orderForm.value.bendingDate,
         assemblyDate: this.orderForm.value.assemblyDate
       };
-
-      this.orderClient.createOrder(formData).subscribe(
-        response => console.log(response),
-        error => console.log(error)
-      );
-
+      this.orderClient.createOrder(formData).subscribe(() => {
+        this.orderCreateObserver.next(formData);
+      });
     }
     this.clearOrderForm();
   }

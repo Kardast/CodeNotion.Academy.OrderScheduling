@@ -10,25 +10,19 @@ main {
   background-color: #0D1117;
   color: #B9BBBD;
   width: 80%;
-  padding: 0 15px 0 15px;
+  padding: 15px 15px 15px 15px;
   margin: auto;
-  //debug
-  height: 1500px;
-
-  .title {
-    padding: 25px 0 15px 0;
-  }
-
-  .formInput{
-    margin-right: 5px;
-  }
 
   .filtersWrapper {
     display: flex;
 
     .filter {
-      margin-right: 10px;
+      margin-right: 5px;
     }
+  }
+
+  .formInput{
+    margin-right: 5px;
   }
 
   .ordersTable {

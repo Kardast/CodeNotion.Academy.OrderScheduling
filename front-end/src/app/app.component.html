@@ -1,20 +1,25 @@
 <main>
-  <div class="filtersWrapper">
-    <div class="filter">
-      <mat-form-field class="example-full-width">
-        <mat-label>Search by customer</mat-label>
-        <input type="text" matInput [(ngModel)]="searchCustomer" placeholder="Write..." (keyup)="searchCustomerKeyUp()">
-      </mat-form-field>
-    </div>
-    <div class="filter">
-      <mat-form-field class="example-full-width">
-        <mat-label>Search by order number</mat-label>
-        <input type="text" matInput [(ngModel)]="searchOrderNumber" placeholder="Write..." (keyup)="searchOrderNumberKeyUp()">
-      </mat-form-field>
+  <div>
+    <p>Search an Order</p>
+    <div class="filtersWrapper">
+      <div class="filter">
+        <mat-form-field class="example-full-width">
+          <mat-label>Search by customer</mat-label>
+          <input type="text" matInput [(ngModel)]="searchCustomer" placeholder="Write..." (keyup)="searchCustomerKeyUp()">
+        </mat-form-field>
+      </div>
+      <div class="filter">
+        <mat-form-field class="example-full-width">
+          <mat-label>Search by order number</mat-label>
+          <input type="text" matInput [(ngModel)]="searchOrderNumber" placeholder="Write..."
+            (keyup)="searchOrderNumberKeyUp()">
+        </mat-form-field>
+      </div>
     </div>
   </div>
 
   <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+    <p>Create a new Order</p>
     <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1)">
       <mat-label>{{column}}</mat-label>
       <input matInput formControlName="{{column}}" type="text">
