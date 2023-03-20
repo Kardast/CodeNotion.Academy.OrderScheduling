@@ -5,7 +5,8 @@
       <div class="filter">
         <mat-form-field class="example-full-width">
           <mat-label>Search by customer</mat-label>
-          <input type="text" matInput [(ngModel)]="searchCustomer" placeholder="Write..." (keyup)="searchCustomerKeyUp()">
+          <input type="text" matInput [(ngModel)]="searchCustomer" placeholder="Write..."
+            (keyup)="searchCustomerKeyUp()">
         </mat-form-field>
       </div>
       <div class="filter">
@@ -20,9 +21,16 @@
 
   <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
     <p>Create a new Order</p>
-    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1); let i = index">
+    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(1,3); let i = index">
       <mat-label>{{column}}</mat-label>
-      <input matInput formControlName="{{column}}" [type]="inputType[i]">
+      <input matInput type="text" formControlName="{{column}}">
+    </mat-form-field>
+
+    <mat-form-field class="formInput" *ngFor="let column of columnsToDisplay.slice(3); let i = index">
+      <mat-label>{{column}}</mat-label>
+      <input type="date" matInput [matDatepicker]="orderDates" formControlName="{{column}}">
+      <mat-datepicker-toggle matSuffix [for]="orderDates"></mat-datepicker-toggle>
+      <mat-datepicker #orderDates></mat-datepicker>
     </mat-form-field>
 
     <div class="example-button-row">
@@ -33,7 +41,7 @@
   <table class="ordersTable" mat-table [dataSource]="orders$">
     <ng-container *ngFor="let column of columnsToDisplay" matColumnDef="{{column}}">
       <th mat-header-cell *matHeaderCellDef>{{column}}</th>
-      <td mat-cell *matCellDef="let listOrder">{{listOrder[column]}}</td>
+      <td mat-cell *matCellDef="let listOrder" (click)="fillUpdateForm(listOrder)">{{listOrder[column]}}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeNotion.Academy.OrderScheduling.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230317160846_OrderDatesNullable")]
-    partial class OrderDatesNullable
+    [Migration("20230320090853_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -19,10 +19,10 @@ namespace CodeNotion.Academy.OrderScheduling.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Customer = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CuttingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PreparationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BendingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AssemblyDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CuttingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PreparationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BendingDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AssemblyDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

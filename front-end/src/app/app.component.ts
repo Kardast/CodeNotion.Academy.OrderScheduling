@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { combineLatest, BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Observer, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
 
 @Component({
@@ -11,15 +11,17 @@ import { Order, OrderClient } from './api.service';
 export class AppComponent {
   searchCustomer: string = '';
   searchOrderNumber: string = '';
-  inputType = ["text", "text", "date", "date", "date", "date"];
   orderForm!: FormGroup;
+  orderId = 0;
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
-  
+
   searchFilter$ = new BehaviorSubject<{ customer?: string; orderNumber?: string }>({});
-  
+
   orderCreate$ = new BehaviorSubject<Order | null>(null);
 
-  orders$ = combineLatest([this.searchFilter$, this.orderCreate$])
+  orderUpdate$ = new BehaviorSubject<Order | null>(null);
+
+  orders$ = combineLatest([this.searchFilter$, this.orderCreate$, this.orderUpdate$])
     .pipe(switchMap(([filter]) => this.orderClient.list(filter.customer, filter.orderNumber)));
 
   constructor(private fb: FormBuilder, private orderClient: OrderClient) {
@@ -45,6 +47,19 @@ export class AppComponent {
     this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
   }
 
+  fillUpdateForm(row: Order) {
+    this.orderForm.patchValue({
+      id: row.id,
+      customer: row.customer,
+      orderNumber: row.orderNumber,
+      cuttingDate: row.cuttingDate ? new Date(row.cuttingDate) : null,
+      preparationDate: row.preparationDate ? new Date(row.preparationDate) : null,
+      bendingDate: row.bendingDate ? new Date(row.bendingDate) : null,
+      assemblyDate: row.assemblyDate ? new Date(row.assemblyDate) : null
+    });
+    this.orderId = row.id ?? 0;
+  }
+
   onSubmit() {
     if (!this.orderForm.valid) {
       this.clearOrderForm();
@@ -52,10 +67,16 @@ export class AppComponent {
     }
 
     const payload = Object.assign({}, this.orderForm.getRawValue()) as Order;
-    this.orderClient
-      .createOrder(payload)
-      .subscribe(() => this.orderCreate$.next(payload));
-
+    if (this.orderId) {
+      this.orderClient
+        .update(this.orderId, payload)
+        .subscribe(() => this.orderUpdate$.next(payload));
+    }
+    else {
+      this.orderClient
+        .createOrder(payload)
+        .subscribe(() => this.orderCreate$.next(payload));
+    }
     this.clearOrderForm();
   }
 }

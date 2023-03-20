@@ -273,10 +273,10 @@ export interface Order {
     id?: number;
     customer?: string | undefined;
     orderNumber?: string | undefined;
-    cuttingDate?: Date;
-    preparationDate?: Date;
-    bendingDate?: Date;
-    assemblyDate?: Date;
+    cuttingDate?: Date | undefined;
+    preparationDate?: Date | undefined;
+    bendingDate?: Date | undefined;
+    assemblyDate?: Date | undefined;
 }
 
 export class ApiException extends Error {
