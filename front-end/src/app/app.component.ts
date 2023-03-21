@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, combineLatest, Observable, Observer, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
+import { serializeDateOnly } from './dateonly.utils';
 
 @Component({
   selector: 'app-root',
@@ -50,10 +51,10 @@ export class AppComponent {
     }
 
     const payload = Object.assign({}, this.orderForm.getRawValue()) as Order;
-    // payload.cuttingDate = serializeDateOnly(payload.cuttingDate);
-    // payload.preparationDate = serializeDateOnly(payload.preparationDate);
-    // payload.bendingDate = serializeDateOnly(payload.bendingDate);
-    // payload.assemblyDate = serializeDateOnly(payload.assemblyDate);
+    payload.cuttingDate = serializeDateOnly(payload.cuttingDate);
+    payload.preparationDate = serializeDateOnly(payload.preparationDate);
+    payload.bendingDate = serializeDateOnly(payload.bendingDate);
+    payload.assemblyDate = serializeDateOnly(payload.assemblyDate);
 
     if (this.orderId) {
       this.orderClient
