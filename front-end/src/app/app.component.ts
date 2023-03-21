@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, combineLatest, Observable, Observer, switchMap } from 'rxjs';
+import { Component, ViewChild } from '@angular/core';
+import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
-import { serializeDateOnly } from './dateonly.utils';
+import { AppOrderFormComponent } from './app-order-form/app-order-form.component';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +9,9 @@ import { serializeDateOnly } from './dateonly.utils';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  @ViewChild(AppOrderFormComponent) childComponent!: AppOrderFormComponent;
   searchCustomer: string = '';
   searchOrderNumber: string = '';
-  orderForm!: FormGroup;
-  orderId = 0;
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate', 'action'];
 
   searchFilter$ = new BehaviorSubject<{ customer?: string; orderNumber?: string }>({});
@@ -23,54 +21,10 @@ export class AppComponent {
   orders$ = combineLatest([this.searchFilter$, this.orderCreate$, this.orderUpdate$, this.orderDelete$])
     .pipe(switchMap(([filter]) => this.orderClient.list(filter.customer, filter.orderNumber)));
 
-  constructor(private fb: FormBuilder, private orderClient: OrderClient) {
-    this.clearOrderForm();
-  }
+  constructor(private orderClient: OrderClient) { }
 
-  clearOrderForm() {
-    this.orderForm = this.fb.group({
-      id: [0, Validators.required],
-      customer: [null, Validators.required],
-      orderNumber: [null, Validators.required],
-      cuttingDate: [null],
-      preparationDate: [null],
-      bendingDate: [null],
-      assemblyDate: [null]
-    });
-  }
-
-  fillUpdateForm(row: Order) {
-    this.orderForm.setValue({ ...row });
-    this.orderId = row.id ?? 0;
-  }
-
-  onSubmit() {
-    if (!this.orderForm.valid) {
-      this.clearOrderForm();
-      return;
-    }
-
-    const payload = Object.assign({}, this.orderForm.getRawValue()) as Order;
-    payload.cuttingDate = serializeDateOnly(payload.cuttingDate);
-    payload.preparationDate = serializeDateOnly(payload.preparationDate);
-    payload.bendingDate = serializeDateOnly(payload.bendingDate);
-    payload.assemblyDate = serializeDateOnly(payload.assemblyDate);
-
-    if (this.orderId) {
-      this.orderClient
-        .update(payload)
-        .subscribe(() => this.orderUpdate$.next(payload));
-        this.clearOrderForm();
-        this.orderId = 0;
-      return;
-    }
-
-    this.orderClient
-      .createOrder(payload)
-      .subscribe(() => this.orderCreate$.next(payload));
-
-    this.clearOrderForm();
-    this.orderId = 0;
+  triggerChildFunction(row: Order) {
+    this.childComponent.fillUpdateForm(row);
   }
 
   deleteOrder(order: any) {
@@ -88,5 +42,16 @@ export class AppComponent {
 
   searchOrderNumberKeyUp() {
     this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
+  }
+
+  ///
+  /// FROM ORDER FORM COMPONENT
+  ///
+  handLeOrderManager(payload: Order) {
+    if (payload.id) {
+      this.orderUpdate$.next(payload);
+    }
+
+    this.orderCreate$.next(payload);
   }
 }
