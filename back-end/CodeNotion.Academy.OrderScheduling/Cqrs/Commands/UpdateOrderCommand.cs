@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeNotion.Academy.OrderScheduling.Cqrs.Commands;
 
-public record UpdateOrderCommand(int Id, Order Order) : IRequest<Order>;
+public record UpdateOrderCommand(Order Order) : IRequest<Order>;
 
 internal class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, Order>
 {
@@ -18,18 +18,22 @@ internal class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, Order>
 
     public async Task<Order> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
     {
-        var orderFromDb = await _db.Orders.FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken: cancellationToken);
-        if (orderFromDb != null)
+        var orderFromDb = await GetById(request.Order.Id);
+        if (orderFromDb is null)
         {
-            orderFromDb.Customer = request.Order.Customer;
-            orderFromDb.OrderNumber = request.Order.OrderNumber;
-            orderFromDb.CuttingDate = request.Order.CuttingDate;
-            orderFromDb.PreparationDate = request.Order.PreparationDate;
-            orderFromDb.BendingDate = request.Order.BendingDate;
-            orderFromDb.AssemblyDate = request.Order.AssemblyDate;
+            throw new InvalidOperationException();
         }
+
+        orderFromDb.Customer = request.Order.Customer;
+        orderFromDb.OrderNumber = request.Order.OrderNumber;
+        orderFromDb.CuttingDate = request.Order.CuttingDate;
+        orderFromDb.PreparationDate = request.Order.PreparationDate;
+        orderFromDb.BendingDate = request.Order.BendingDate;
+        orderFromDb.AssemblyDate = request.Order.AssemblyDate;
 
         await _db.SaveChangesAsync(cancellationToken);
         return orderFromDb ?? throw new InvalidOperationException();
     }
+
+    private Task<Order?> GetById(int id) => _db.Orders.FirstOrDefaultAsync(or => or.Id == id);
 }

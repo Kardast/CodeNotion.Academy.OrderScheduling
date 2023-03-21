@@ -23,6 +23,16 @@ public static class SwaggerConfiguration
                 options.SwaggerDoc(ApiVersion, new OpenApiInfo { Title = ApiTitle, Version = ApiVersion });
                 options.OperationFilter<SwaggerExcludeFilter>();
                 options.SchemaFilter<XEnumNamesSchemaFilter>();
+                options.MapType<TimeSpan>(() => new OpenApiSchema
+                {
+                    Type = "string",
+                    Example = new OpenApiString("00:00:00")
+                });
+                options.MapType<DateOnly>(() => new OpenApiSchema
+                {
+                    Type = "string",
+                    Example = new OpenApiString("yyyy-MM-dd")
+                });
                 options.CustomOperationIds(description => description.TryGetMethodInfo(out MethodInfo methodInfo) ? $"{methodInfo.DeclaringType!.Name.Replace("Controller", string.Empty)}_{methodInfo.Name}" : null);
             });
     }

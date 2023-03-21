@@ -13,16 +13,12 @@ export class AppComponent {
   searchOrderNumber: string = '';
   orderForm!: FormGroup;
   orderId = 0;
-  columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate'];
+  columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate', 'action'];
 
   searchFilter$ = new BehaviorSubject<{ customer?: string; orderNumber?: string }>({});
-
   orderCreate$ = new BehaviorSubject<Order | null>(null);
-
   orderUpdate$ = new BehaviorSubject<Order | null>(null);
-
   orderDelete$ = new BehaviorSubject<Order | null>(null);
-
   orders$ = combineLatest([this.searchFilter$, this.orderCreate$, this.orderUpdate$, this.orderDelete$])
     .pipe(switchMap(([filter]) => this.orderClient.list(filter.customer, filter.orderNumber)));
 
@@ -32,6 +28,7 @@ export class AppComponent {
 
   clearOrderForm() {
     this.orderForm = this.fb.group({
+      id: [0, Validators.required],
       customer: [null, Validators.required],
       orderNumber: [null, Validators.required],
       cuttingDate: [null],
@@ -41,24 +38,8 @@ export class AppComponent {
     });
   }
 
-  searchCustomerKeyUp() {
-    this.searchFilter$.next({ ...this.searchFilter$.value, customer: this.searchCustomer });
-  }
-
-  searchOrderNumberKeyUp() {
-    this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
-  }
-
   fillUpdateForm(row: Order) {
-    this.orderForm.patchValue({
-      id: row.id,
-      customer: row.customer,
-      orderNumber: row.orderNumber,
-      cuttingDate: row.cuttingDate ? new Date(row.cuttingDate) : null,
-      preparationDate: row.preparationDate ? new Date(row.preparationDate) : null,
-      bendingDate: row.bendingDate ? new Date(row.bendingDate) : null,
-      assemblyDate: row.assemblyDate ? new Date(row.assemblyDate) : null
-    });
+    this.orderForm.setValue({ ...row });
     this.orderId = row.id ?? 0;
   }
 
@@ -69,21 +50,42 @@ export class AppComponent {
     }
 
     const payload = Object.assign({}, this.orderForm.getRawValue()) as Order;
+    // payload.cuttingDate = serializeDateOnly(payload.cuttingDate);
+    // payload.preparationDate = serializeDateOnly(payload.preparationDate);
+    // payload.bendingDate = serializeDateOnly(payload.bendingDate);
+    // payload.assemblyDate = serializeDateOnly(payload.assemblyDate);
+
     if (this.orderId) {
       this.orderClient
-        .update(this.orderId, payload)
+        .update(payload)
         .subscribe(() => this.orderUpdate$.next(payload));
+        this.clearOrderForm();
+        this.orderId = 0;
+      return;
     }
-    else {
-      this.orderClient
-        .createOrder(payload)
-        .subscribe(() => this.orderCreate$.next(payload));
-    }
+
+    this.orderClient
+      .createOrder(payload)
+      .subscribe(() => this.orderCreate$.next(payload));
+
     this.clearOrderForm();
+    this.orderId = 0;
   }
 
-  deleteOrder(listOrder : any){
-    console.log(listOrder.id);
-    this.orderClient.delete(listOrder.id).subscribe(() => this.orderDelete$.next(listOrder));
+  deleteOrder(order: any) {
+    if (!order?.id || order?.id === 0) {
+      return;
+    }
+    this.orderClient
+      .delete(order.id)
+      .subscribe(() => this.orderDelete$.next(order));
+  }
+
+  searchCustomerKeyUp() {
+    this.searchFilter$.next({ ...this.searchFilter$.value, customer: this.searchCustomer });
+  }
+
+  searchOrderNumberKeyUp() {
+    this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
   }
 }

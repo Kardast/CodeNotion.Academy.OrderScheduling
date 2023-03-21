@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CodeNotion.Academy.OrderScheduling.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class OrderController : ControllerBase
 {
@@ -18,46 +18,55 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder(Order order)
+    public async Task<IActionResult> CreateOrder([FromBody] Order order)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-    
+
         var command = new CreateOrderCommand(order);
         var result = await _mediator.Send(command);
         return Ok(result);
     }
 
-    [Route("")]
     [HttpGet]
+    [Route("[action]")]
     [ProducesResponseType(typeof(List<Order>), 200)]
-    public async Task<IActionResult> List([FromQuery]string? customer, string? orderNumber)
-    {
-        var query = new GetListQuery(customer, orderNumber);
-        var result = await _mediator.Send(query);
-        return Ok(result);
-    }
-
-    [Route("{id:int}")]
-    [HttpPost]
-    public async Task<IActionResult> Update(int id, Order order)
+    public async Task<IActionResult> List([FromQuery] string? customer, [FromQuery] string? orderNumber)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var command = new UpdateOrderCommand(id, order);
+        var query = new GetListQuery(customer, orderNumber);
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] Order order)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var command = new UpdateOrderCommand(order);
         var result = await _mediator.Send(command);
         return Ok(result);
     }
 
-    [Route("{id:int}")]
-    [HttpPost]
+    [HttpDelete]
+    [Route("[action]/{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var command = new DeleteOrderCommand(id);
         await _mediator.Send(command);
         return Ok("File removed");
