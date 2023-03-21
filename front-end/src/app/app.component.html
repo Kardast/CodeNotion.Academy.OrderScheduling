@@ -43,8 +43,16 @@
       <th mat-header-cell *matHeaderCellDef>{{column}}</th>
       <td class="orderRow" mat-cell *matCellDef="let listOrder" (click)="fillUpdateForm(listOrder)">{{listOrder[column]}}</td>
     </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef>delete</th>
+      <td class="orderRow" mat-cell *matCellDef="let listOrder">
+        <button mat-icon-button (click)="deleteOrder(listOrder)">
+          <mat-icon>delete</mat-icon>*
+        </button>
+      </td>
+    </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay.concat('delete')"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay.concat('delete')"></tr>
   </table>
 </main>

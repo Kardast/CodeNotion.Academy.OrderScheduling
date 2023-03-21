@@ -21,7 +21,9 @@ export class AppComponent {
 
   orderUpdate$ = new BehaviorSubject<Order | null>(null);
 
-  orders$ = combineLatest([this.searchFilter$, this.orderCreate$, this.orderUpdate$])
+  orderDelete$ = new BehaviorSubject<Order | null>(null);
+
+  orders$ = combineLatest([this.searchFilter$, this.orderCreate$, this.orderUpdate$, this.orderDelete$])
     .pipe(switchMap(([filter]) => this.orderClient.list(filter.customer, filter.orderNumber)));
 
   constructor(private fb: FormBuilder, private orderClient: OrderClient) {
@@ -78,5 +80,10 @@ export class AppComponent {
         .subscribe(() => this.orderCreate$.next(payload));
     }
     this.clearOrderForm();
+  }
+
+  deleteOrder(listOrder : any){
+    console.log(listOrder.id);
+    this.orderClient.delete(listOrder.id).subscribe(() => this.orderDelete$.next(listOrder));
   }
 }

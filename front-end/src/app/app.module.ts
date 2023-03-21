@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
   imports: [
     BrowserModule, HttpClientModule, BrowserAnimationsModule, MatTableModule,
     MatPaginatorModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule,
-    MatFormFieldModule, MatDatepickerModule, MatNativeDateModule
+    MatFormFieldModule, MatDatepickerModule, MatNativeDateModule, MatIconModule
   ],
   providers: [{ provide: API_BASE_URL, useValue: "http://localhost:5075" }, {provide: MAT_DATE_LOCALE, useValue: 'af'}],
   bootstrap: [AppComponent],
