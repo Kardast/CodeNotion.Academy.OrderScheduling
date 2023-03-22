@@ -9,7 +9,6 @@ import { serializeDateOnly } from '../dateonly.utils';
   styleUrls: ['./app-order-form.component.scss']
 })
 export class AppOrderFormComponent {
-  //@Input() orderId!: number;
   @Output() orderManagerOutput = new EventEmitter<Order>();
 
   orderForm!: FormGroup;
@@ -34,6 +33,7 @@ export class AppOrderFormComponent {
     if (!row.id) {
       return;
     }
+
     this.orderForm.setValue({ ...row });
   }
 

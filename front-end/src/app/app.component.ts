@@ -9,7 +9,8 @@ import { AppOrderFormComponent } from './app-order-form/app-order-form.component
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  @ViewChild(AppOrderFormComponent) childComponent!: AppOrderFormComponent;
+  @ViewChild(AppOrderFormComponent) childFormComponent!: AppOrderFormComponent;
+
   searchCustomer: string = '';
   searchOrderNumber: string = '';
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate', 'action'];
@@ -23,17 +24,22 @@ export class AppComponent {
 
   constructor(private orderClient: OrderClient) { }
 
-  triggerChildFunction(row: Order) {
-    this.childComponent.fillUpdateForm(row);
+  fillChildUpdateForm(row: Order) {
+    this.childFormComponent.fillUpdateForm(row);
   }
 
-  deleteOrder(order: any) {
+  deleteOrder(order: any, event: MouseEvent) {
+    event.stopPropagation();
+
     if (!order?.id || order?.id === 0) {
       return;
     }
+
     this.orderClient
       .delete(order.id)
       .subscribe(() => this.orderDelete$.next(order));
+
+    this.childFormComponent.clearOrderForm();
   }
 
   searchCustomerKeyUp() {
