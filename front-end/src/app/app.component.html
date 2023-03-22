@@ -20,7 +20,7 @@
   </div>
 
   <!-- COMPONENT THAT MANAGES CREATE AND UPDATE -->
-  <app-app-order-form (orderManagerOutput)="handLeOrderManager($event)">
+  <app-app-order-form (onOrderUpdated)="refresh($event)" [order]="focusedOrder">
   </app-app-order-form>
 
   <table class="ordersTable" mat-table [dataSource]="orders$">
@@ -70,6 +70,6 @@
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
     <tr class="orderRow" mat-row *matRowDef="let rowOrder; columns: columnsToDisplay"
-      (click)="fillChildUpdateForm(rowOrder)"></tr>
+      (click)="focusedOrder = rowOrder"></tr>
   </table>
 </main>

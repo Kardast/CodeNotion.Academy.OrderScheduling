@@ -1,4 +1,4 @@
-<form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="orderForm" (ngSubmit)="onSubmit()" *ngIf="orderForm">
   <p>Create a new Order</p>
   <mat-form-field class="margin example-full-width formInput">
     <mat-label>customer</mat-label>

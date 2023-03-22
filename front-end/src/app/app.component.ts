@@ -1,7 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { BehaviorSubject, combineLatest, switchMap } from 'rxjs';
 import { Order, OrderClient } from './api.service';
-import { AppOrderFormComponent } from './app-order-form/app-order-form.component';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +8,8 @@ import { AppOrderFormComponent } from './app-order-form/app-order-form.component
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  @ViewChild(AppOrderFormComponent) childFormComponent!: AppOrderFormComponent;
 
+  focusedOrder: Order | null = null;
   searchCustomer: string = '';
   searchOrderNumber: string = '';
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate', 'action'];
@@ -24,10 +23,6 @@ export class AppComponent {
 
   constructor(private orderClient: OrderClient) { }
 
-  fillChildUpdateForm(row: Order) {
-    this.childFormComponent.fillUpdateForm(row);
-  }
-
   deleteOrder(order: any, event: MouseEvent) {
     event.stopPropagation();
 
@@ -39,7 +34,7 @@ export class AppComponent {
       .delete(order.id)
       .subscribe(() => this.orderDelete$.next(order));
 
-    this.childFormComponent.clearOrderForm();
+    this.focusedOrder = null;
   }
 
   searchCustomerKeyUp() {
@@ -50,10 +45,7 @@ export class AppComponent {
     this.searchFilter$.next({ ...this.searchFilter$.value, orderNumber: this.searchOrderNumber });
   }
 
-  ///
-  /// FROM ORDER FORM COMPONENT
-  ///
-  handLeOrderManager(payload: Order) {
+  refresh(payload: Order) {
     if (payload.id) {
       this.orderUpdate$.next(payload);
     }
