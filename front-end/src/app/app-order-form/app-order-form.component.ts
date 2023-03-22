@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map, Observable } from 'rxjs';
 import { Order, OrderClient } from '../api.service';
 import { serializeDateOnly } from '../dateonly.utils';
 
@@ -9,35 +10,36 @@ import { serializeDateOnly } from '../dateonly.utils';
   styleUrls: ['./app-order-form.component.scss']
 })
 export class AppOrderFormComponent implements OnChanges {
-  @Input() order: Order | null = null;
+  @Input() order!: Observable<Order | null>;
   @Output() onOrderUpdated = new EventEmitter<Order>();
-  orderForm: FormGroup | null = null;
+  orderForm: Observable<FormGroup | null> | null = null;
 
   constructor(private fb: FormBuilder, private orderClient: OrderClient) {
   }
 
   ngOnChanges(): void {
-    this.buildForm();
+    this.orderForm = this.order.pipe(
+      map(order => this.buildForm(order!)));
   }
 
-  buildForm() {
-    this.orderForm = this.fb.group({
-      id: [this.order?.id ?? 0, Validators.required],
-      customer: [this.order?.customer, Validators.required],
-      orderNumber: [this.order?.orderNumber, Validators.required],
-      cuttingDate: [this.order?.cuttingDate],
-      preparationDate: [this.order?.preparationDate],
-      bendingDate: [this.order?.bendingDate],
-      assemblyDate: [this.order?.assemblyDate]
+  buildForm(order: Order | null): FormGroup {
+    return this.fb.group({
+      id: [order?.id ?? 0, Validators.required],
+      customer: [order?.customer, Validators.required],
+      orderNumber: [order?.orderNumber, Validators.required],
+      cuttingDate: [order?.cuttingDate],
+      preparationDate: [order?.preparationDate],
+      bendingDate: [order?.bendingDate],
+      assemblyDate: [order?.assemblyDate]
     });
   }
 
-  onSubmit() {
-    if (!this.orderForm!.valid) {
+  onSubmit(orderForm: FormGroup) {
+    if (!orderForm!.valid) {
       return;
     }
 
-    const payload = Object.assign({}, this.orderForm!.getRawValue()) as Order;
+    const payload = Object.assign({}, orderForm!.getRawValue()) as Order;
     payload.cuttingDate = serializeDateOnly(payload.cuttingDate);
     payload.preparationDate = serializeDateOnly(payload.preparationDate);
     payload.bendingDate = serializeDateOnly(payload.bendingDate);

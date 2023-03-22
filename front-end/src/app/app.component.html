@@ -70,6 +70,6 @@
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
     <tr class="orderRow" mat-row *matRowDef="let rowOrder; columns: columnsToDisplay"
-      (click)="focusedOrder = rowOrder"></tr>
+      (click)="this.focusedOrder.next(rowOrder)"></tr>
   </table>
 </main>

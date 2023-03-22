@@ -9,7 +9,7 @@ import { Order, OrderClient } from './api.service';
 })
 export class AppComponent {
 
-  focusedOrder: Order | null = null;
+  focusedOrder = new BehaviorSubject<Order | null>(null);
   searchCustomer: string = '';
   searchOrderNumber: string = '';
   columnsToDisplay = ['id', 'customer', 'orderNumber', 'cuttingDate', 'preparationDate', 'bendingDate', 'assemblyDate', 'action'];
@@ -34,7 +34,7 @@ export class AppComponent {
       .delete(order.id)
       .subscribe(() => this.orderDelete$.next(order));
 
-    this.focusedOrder = null;
+    this.focusedOrder.next(null);
   }
 
   searchCustomerKeyUp() {
@@ -48,6 +48,7 @@ export class AppComponent {
   refresh(payload: Order) {
     if (payload.id) {
       this.orderUpdate$.next(payload);
+      return;
     }
 
     this.orderCreate$.next(payload);
