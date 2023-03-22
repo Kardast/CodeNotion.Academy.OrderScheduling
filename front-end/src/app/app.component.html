@@ -1,4 +1,9 @@
 <main>
+
+  <!-- COMPONENT THAT MANAGES CREATE AND UPDATE -->
+  <app-app-order-form (onOrderUpdated)="refresh($event)" [order]="focusedOrder">
+  </app-app-order-form>
+
   <div>
     <p>Search an Order</p>
     <div class="filtersWrapper">
@@ -18,10 +23,6 @@
       </div>
     </div>
   </div>
-
-  <!-- COMPONENT THAT MANAGES CREATE AND UPDATE -->
-  <app-app-order-form (onOrderUpdated)="refresh($event)" [order]="focusedOrder">
-  </app-app-order-form>
 
   <table class="ordersTable" mat-table [dataSource]="orders$">
     <ng-container matColumnDef="id">
