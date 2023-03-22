@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Reflection;
 using CodeNotion.Academy.OrderScheduling.Configurations;
 using CodeNotion.Academy.OrderScheduling.Cqrs.Decorators;
@@ -5,6 +6,8 @@ using CodeNotion.Academy.OrderScheduling.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Timer = CodeNotion.Academy.OrderScheduling.Cqrs.Decorators.Timer;
+
+[assembly: InternalsVisibleTo("CodeNotion.Academy.OrderScheduling.Tests")]
 
 var builder = WebApplication.CreateBuilder(args);
 
