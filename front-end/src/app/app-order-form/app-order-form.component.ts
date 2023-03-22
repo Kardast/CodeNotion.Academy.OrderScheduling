@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Order, OrderClient } from '../api.service';
 import { serializeDateOnly } from '../dateonly.utils';
 
@@ -10,15 +10,17 @@ import { serializeDateOnly } from '../dateonly.utils';
   styleUrls: ['./app-order-form.component.scss']
 })
 export class AppOrderFormComponent implements OnChanges {
-  @Input() order!: Observable<Order | null>;
-  @Output() onOrderUpdated = new EventEmitter<Order>();
+  @Input() focusedOrder = new BehaviorSubject<Order | null>(null);
+  @Input() orderCreate$ = new BehaviorSubject<Order | null>(null);
+  @Input() orderUpdate$ = new BehaviorSubject<Order | null>(null);
+
   orderForm: Observable<FormGroup | null> | null = null;
 
   constructor(private fb: FormBuilder, private orderClient: OrderClient) {
   }
 
   ngOnChanges(): void {
-    this.orderForm = this.order.pipe(
+    this.orderForm = this.focusedOrder.pipe(
       map(order => this.buildForm(order!)));
   }
 
@@ -48,12 +50,14 @@ export class AppOrderFormComponent implements OnChanges {
     if (payload.id) {
       this.orderClient
         .update(payload)
-        .subscribe(() => this.onOrderUpdated.emit(payload));
+        .subscribe(() => this.orderUpdate$.next(payload));
+      this.focusedOrder.next(null);
       return;
     }
 
     this.orderClient
       .createOrder(payload)
-      .subscribe(() => this.onOrderUpdated.emit(payload));
+      .subscribe(() => this.orderCreate$.next(payload));
+    this.focusedOrder.next(null);
   }
 }

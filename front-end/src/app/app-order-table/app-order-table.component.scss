@@ -1,0 +1,15 @@
+.filtersWrapper {
+  display: flex;
+
+  .filter {
+    margin-right: 5px;
+  }
+}
+
+.ordersTable {
+  margin-top: 20px;
+
+  .orderRow{
+    cursor: pointer;
+  }
+}

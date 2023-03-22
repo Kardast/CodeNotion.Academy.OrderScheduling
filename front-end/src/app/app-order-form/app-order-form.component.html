@@ -1,4 +1,4 @@
-<div *ngIf="orderForm | async as order">
+<div class="orderForm" *ngIf="orderForm | async as order">
   <form [formGroup]="order" (ngSubmit)="onSubmit(order)">
     <p>Create a new Order</p>
     <mat-form-field class="margin example-full-width formInput">
