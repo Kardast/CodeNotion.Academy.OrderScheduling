@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 // Dependency Injection
-builder.Services.AddDbContext<DatabaseContext>();
+// builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddTransient<Timer>();
 builder.Services.AddSwagger();
 builder.Services.AddNSwag();

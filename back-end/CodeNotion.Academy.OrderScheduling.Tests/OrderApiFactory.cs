@@ -1,5 +1,6 @@
 using System.Data.Common;
 using System.Net;
+using System.Reflection;
 using CodeNotion.Academy.OrderScheduling.Database;
 using CodeNotion.Academy.OrderScheduling.Models;
 using DotNet.Testcontainers.Builders;
@@ -13,21 +14,39 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Respawn;
+using Testcontainers.MsSql;
 
 namespace CodeNotion.Academy.OrderScheduling.Tests;
 
+public class FakeLogger : ILogger
+{
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+    {
+        return null;
+    }
+
+    public bool IsEnabled(LogLevel logLevel) => true;
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+    }
+}
+
 public class OrderApiFactory : WebApplicationFactory<DatabaseContext>, IAsyncLifetime
 {
-    private readonly TestcontainerDatabase _container =
-        new TestcontainersBuilder<MsSqlTestcontainer>()
-            .WithDatabase(new MsSqlTestcontainerConfiguration
-            {
-                Password = "localdevpassword#123",
-            })
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithCleanUp(true)
-            .Build();
+    // private readonly MsSqlContainer _container =
+    //     new(new MsSqlConfiguration(Assembly.GetExecutingAssembly().GetName().Name, "sa", "yourStrong(!)Password"), new FakeLogger());
+    //     // new TestcontainersBuilder<MsSqlContainer>()
+    //     //     // .WithDatabase(new MsSqlConfiguration("sa", "Password123!", "OrderScheduling"))
+    //     //     .WithImage("mcr.microsoft.com/mssql/server:2019-latest")
+    //     //     .WithCleanUp(true)
+    //     //     .Build();
+    private readonly MsSqlContainer _container = new MsSqlBuilder()
+        .WithPassword("yourStrong(!)Password")
+        .WithCleanUp(true)
+        .Build();
 
     private DbConnection _dbConnection = default!;
     private Respawner _respawner = default!;
@@ -38,9 +57,11 @@ public class OrderApiFactory : WebApplicationFactory<DatabaseContext>, IAsyncLif
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DatabaseContext));
-            services.AddDbContext<DatabaseContext>(options => { options.UseSqlServer(_container.ConnectionString); });
-            services.AddTransient<Order>();
+            // services.RemoveAll(typeof(DatabaseContext));
+            // services.AddDbContext<DatabaseContext>(options => { options.UseSqlServer(_container.GetConnectionString()); });
+            services.AddTransient<DatabaseContext>(sp => new DatabaseContext(new DbContextOptionsBuilder<DatabaseContext>()
+                .UseSqlServer(_container.GetConnectionString())
+                .Options));
         });
     }
 
@@ -52,7 +73,7 @@ public class OrderApiFactory : WebApplicationFactory<DatabaseContext>, IAsyncLif
     public async Task InitializeAsync()
     {
         await _container.StartAsync();
-        _dbConnection = new SqlConnection(_container.ConnectionString);
+        _dbConnection = new SqlConnection(_container.GetConnectionString());
         HttpClient = CreateClient();
         await InitializeRespawner();
     }
