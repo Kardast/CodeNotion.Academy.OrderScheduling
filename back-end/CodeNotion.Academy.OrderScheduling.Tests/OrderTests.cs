@@ -7,18 +7,42 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeNotion.Academy.OrderScheduling.Tests;
 
-public class OrderTests
+public class OrderTests : IClassFixture<OrderApiFactory>, IAsyncLifetime
 {
+    private readonly HttpClient _client;
+    private readonly Func<Task> _resetDatabase;
     private readonly IMediator _mediator;
     private readonly IServiceProvider _provider;
 
-    public OrderTests()
+    public OrderTests(OrderApiFactory factory)
     {
+        _client = factory.HttpClient;
+        _resetDatabase = factory.ResetDatabaseAsync;
         var services = new ServiceCollection();
-        services.AddDbContext<DatabaseContext>();
+        //services.AddDbContext<DatabaseContext>();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
         _provider = services.BuildServiceProvider().CreateScope().ServiceProvider;
         _mediator = _provider.GetRequiredService<IMediator>();
+    }
+
+    [Fact]
+    public async Task TestGetOrders()
+    {
+        // Arrange
+        List<Order> expectedOrders = new()
+        {
+            /* fill in expected orders */
+        };
+        if (expectedOrders == null) throw new ArgumentNullException(nameof(expectedOrders));
+
+        // Act
+        var response = await _client.GetAsync("/api/Order/List");
+        response.EnsureSuccessStatusCode();
+        var orders = await response.Content.ReadAsAsync<List<Order>>();
+
+        // Assert
+        Assert.Equal(expectedOrders.Count, orders.Count);
+        // add more assertions as needed
     }
 
     [Fact]
@@ -139,4 +163,8 @@ public class OrderTests
         await Assert.ThrowsAsync<InvalidOperationException>(UpdateOrder);
         Assert.Equal(originalOrderCount, orderCount);
     }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => _resetDatabase();
 }

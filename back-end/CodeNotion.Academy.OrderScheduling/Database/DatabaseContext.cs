@@ -13,7 +13,7 @@ public class DatabaseContext : DbContext
         optionsBuilder.UseSqlServer(
             "data source=db5eb13a5470;initial catalog=master;user id=sa;password=myPassword7941;TrustServerCertificate=True;");
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
