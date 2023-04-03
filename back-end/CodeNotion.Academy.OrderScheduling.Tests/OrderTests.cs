@@ -4,10 +4,13 @@ using CodeNotion.Academy.OrderScheduling.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualBasic;
+using System.Data;
 
 namespace CodeNotion.Academy.OrderScheduling.Tests;
 
-public class OrderTests : IClassFixture<OrderApiFactory>, IAsyncLifetime
+[Collection(nameof(SharedTestCollection))]
+public class OrderTests : IAsyncLifetime
 {
     private readonly HttpClient _client;
     private readonly Func<Task> _resetDatabase;
@@ -18,30 +21,33 @@ public class OrderTests : IClassFixture<OrderApiFactory>, IAsyncLifetime
     {
         _client = factory.HttpClient;
         _resetDatabase = factory.ResetDatabaseAsync;
-        var services = new ServiceCollection();
-        //services.AddDbContext<DatabaseContext>();
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-        _provider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+        _provider = factory.Services.CreateScope().ServiceProvider;
         _mediator = _provider.GetRequiredService<IMediator>();
+
+        SeedDatabase();
+    }
+
+    private void SeedDatabase()
+    {
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        context.Orders.AddRange(new Order[]
+        {
+            new() { Customer = "Alex", OrderNumber = "XR123", CuttingDate = new(2023, 03, 01), PreparationDate = new(2023, 03, 02), BendingDate = new(2023, 03, 03), AssemblyDate = new(2023, 03, 04) },
+        });
+        context.SaveChanges();
     }
 
     [Fact]
-    public async Task TestGetOrders()
+    public async Task Should_ReturnAllOrders()
     {
         // Arrange
-        List<Order> expectedOrders = new()
-        {
-            /* fill in expected orders */
-        };
-        if (expectedOrders == null) throw new ArgumentNullException(nameof(expectedOrders));
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var expectedOrders = await context.Orders.ToListAsync();
 
-        // Act
-        var response = await _client.GetAsync("/api/Order/List");
-        response.EnsureSuccessStatusCode();
-        var orders = await response.Content.ReadAsAsync<List<Order>>();
-
-        // Assert
-        Assert.Equal(expectedOrders.Count, orders.Count);
+        // Act & Assert
+        var response = (await _client.GetAsync("/api/Order/List")).EnsureSuccessStatusCode();
+        var actualOrders = await response.Content.ReadAsAsync<List<Order>>();
+        Assert.Equal(expectedOrders, actualOrders);
         // add more assertions as needed
     }
 
@@ -49,119 +55,112 @@ public class OrderTests : IClassFixture<OrderApiFactory>, IAsyncLifetime
     public async Task Should_CreateOrder_When_OrderIsCorrect()
     {
         // Arrange
-        var order = new Order
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var orderToCreate = new Order
         {
-            Customer = "test",
-            OrderNumber = "123"
+            Customer = "Felix",
+            OrderNumber = "PW898"
         };
+        var initialOrdersCount = await context.Orders.CountAsync();
+        var excpectedOrdersCount = initialOrdersCount + 1;
 
         // Act
-        var result = await _mediator.Send(new CreateOrderCommand(order));
+        var result = await _mediator.Send(new CreateOrderCommand(orderToCreate));
 
         // Assert
-        Assert.NotNull(result);
-        Assert.True(result.Id > 0);
-        Assert.Equal(order.Customer, result.Customer);
-        Assert.Equal(order.OrderNumber, result.OrderNumber);
+        Assert.True(result.Id >= 0);
+        Assert.Equal(orderToCreate, result);
+
+        var createdOrder = await context.Orders.FindAsync(result.Id);
+        Assert.Equal(orderToCreate, createdOrder);
+
+        var actualOrdersCount = await context.Orders.CountAsync();
+        Assert.Equal(excpectedOrdersCount, actualOrdersCount);
     }
 
     [Fact]
     public async Task Should_UpdateOrder_When_OrderIsCorrect()
     {
         // Arrange
-        var order = _provider
-            .GetRequiredService<DatabaseContext>()
-            .Orders
-            .AsNoTracking()
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault();
-
-        var newOrder = new Order
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var lastOrderId = await context.Orders.OrderBy(x => x.Id).Select(x => x.Id).LastAsync();
+        var orderToUpdate = new Order()
         {
-            Id = order!.Id,
-            Customer = "new test",
-            OrderNumber = "456"
+            Id = lastOrderId,
+            Customer = string.Empty,
+            OrderNumber = string.Empty
         };
+        var excpectedOrdersCount = await context.Orders.CountAsync();
 
         // Act
-        var result = await _mediator.Send(new UpdateOrderCommand(newOrder));
-        var updatedOrder = await _provider.GetRequiredService<DatabaseContext>().Orders.FindAsync(result.Id);
+        var result = await _mediator.Send(new UpdateOrderCommand(orderToUpdate));
 
         // Assert
-        Assert.NotNull(updatedOrder);
-        Assert.True(updatedOrder.Id > 0);
-        Assert.Equal(newOrder.Customer, updatedOrder.Customer);
-        Assert.Equal(newOrder.OrderNumber, updatedOrder.OrderNumber);
+        Assert.Equal(orderToUpdate, result);
+
+        var updatedOrder = await context.Orders.FindAsync(result.Id);
+        Assert.Equal(orderToUpdate, updatedOrder);
+
+        var actualOrdersCount = await context.Orders.CountAsync();
+        Assert.Equal(excpectedOrdersCount, actualOrdersCount);
     }
 
     [Fact]
     public async Task Should_DeleteOrder_When_OrderExists()
     {
         // Arrange
-        var order = _provider
-            .GetRequiredService<DatabaseContext>()
-            .Orders
-            .AsNoTracking()
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault();
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var orderToDeleteId = await context.Orders.Select(x => x.Id).FirstAsync();
+        var initialOrdersCount = await context.Orders.CountAsync();
+        var expectedOrdersCount = initialOrdersCount - 1;
 
         // Act
-        var originalOrderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
-        await _mediator.Send(new DeleteOrderCommand(order!.Id));
-        var orderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
-        var deletedOrder = await _provider.GetRequiredService<DatabaseContext>().Orders.FindAsync(order.Id);
+        await _mediator.Send(new DeleteOrderCommand(orderToDeleteId));
 
         // Assert
-        Assert.Null(deletedOrder); // Verify that the order was deleted
-        Assert.Equal(originalOrderCount - 1, orderCount);
+        var deletedOrder = await context.Orders.FindAsync(orderToDeleteId);
+        Assert.Null(deletedOrder); // verify that the order was deleted
+
+        var actualOrdersCount = await context.Orders.CountAsync();
+        Assert.Equal(expectedOrdersCount, actualOrdersCount);
     }
 
     [Fact]
-    public async Task Should_NotThrowError_When_DeletingNonExistingOrder()
+    public async Task Should_NotThrow_When_DeletingNonExistingOrder()
     {
         // Arrange
-        var order = _provider
-            .GetRequiredService<DatabaseContext>()
-            .Orders
-            .AsNoTracking()
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault();
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var excpectedOrdersCount = await context.Orders.CountAsync();
+        var lastOrderId = await context.Orders.OrderBy(x => x.Id).Select(x => x.Id).LastAsync();
+        var nonExistedOrderId = lastOrderId + 1;
 
         // Act
-        var originalOrderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
-        await _mediator.Send(new DeleteOrderCommand(order!.Id + 1));
-        var orderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
+        await _mediator.Send(new DeleteOrderCommand(nonExistedOrderId));
 
         // Assert
-        Assert.Equal(originalOrderCount, orderCount);
+        var actualOrdersCount = await context.Orders.CountAsync();
+        Assert.Equal(excpectedOrdersCount, actualOrdersCount);
     }
 
     [Fact]
-    public async Task Should_ThrowError_When_UpdatingNonExistingOrder()
+    public async Task Should_Throw_When_UpdatingNonExistingOrder()
     {
         // Arrange
-        var order = _provider
-            .GetRequiredService<DatabaseContext>()
-            .Orders
-            .AsNoTracking()
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefault();
-
-        var newOrder = new Order
+        var context = _provider.GetRequiredService<DatabaseContext>();
+        var excpectedOrdersCount = await context.Orders.CountAsync();
+        var lastOrderId = await context.Orders.OrderBy(x => x.Id).Select(x => x.Id).LastAsync();
+        var nonExistingOrder = new Order()
         {
-            Id = order!.Id + 1,
-            Customer = "new test",
-            OrderNumber = "456"
+            Id = lastOrderId + 1,
+            Customer = string.Empty,
+            OrderNumber = string.Empty
         };
+        
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _mediator.Send(new UpdateOrderCommand(nonExistingOrder)));
 
-        // Act
-        var originalOrderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
-        async Task UpdateOrder() => await _mediator.Send(new UpdateOrderCommand(newOrder));
-        var orderCount = await _provider.GetRequiredService<DatabaseContext>().Orders.CountAsync();
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(UpdateOrder);
-        Assert.Equal(originalOrderCount, orderCount);
+        var actualOrdersCount = await context.Orders.CountAsync();
+        Assert.Equal(excpectedOrdersCount, actualOrdersCount);
     }
 
     public Task InitializeAsync() => Task.CompletedTask;
