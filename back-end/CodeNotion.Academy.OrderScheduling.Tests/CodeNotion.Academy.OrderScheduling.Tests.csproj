@@ -35,4 +35,8 @@
       <ProjectReference Include="..\CodeNotion.Academy.OrderScheduling\CodeNotion.Academy.OrderScheduling.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Using Include="Xunit" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 namespace CodeNotion.Academy.OrderScheduling.Models;
 
-public class Order
+public record Order
 {
     public int Id { get; set; }
     public string Customer { get; set; } = null!;
